@@ -1,1 +1,1 @@
-# Loterias-GeradorFinalDiaDeSorte-
+# GeradorFinalDiaDeSorte
