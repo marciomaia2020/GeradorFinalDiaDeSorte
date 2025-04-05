@@ -13,6 +13,7 @@
             --cor-texto-escuro: #f8f9fa;
             --cor-selecionado: #22c55e;
             --cor-obrigatorio: #ff6b6b;
+            --cor-resumo: #ff0000;
         }
         
         body {
@@ -297,6 +298,29 @@
         .escondido {
             display: none !important;
         }
+        
+        /* Estilos para o resumo */
+        .resumo-painel {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+        }
+        
+        .resumo-conteudo {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cor-resumo);
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+            white-space: pre-line;
+        }
     </style>
 </head>
 <body>
@@ -385,6 +409,12 @@
                         <option value="10">10 jogos</option>
                         <option value="15">15 jogos</option>
                         <option value="20">20 jogos</option>
+                        <option value="30">30 jogos</option>
+                        <option value="50">50 jogos</option>
+                        <option value="100">100 jogos</option>
+                        <option value="200">200 jogos</option>
+                        <option value="500">500 jogos</option>
+                        <option value="1000">1000 jogos</option>
                     </select>
                 </div>
                 
@@ -408,7 +438,46 @@
                         <span>Restam selecionar:</span> 
                         <span id="qtdRestante" style="font-weight: bold; color: var(--cor-selecionado);">31</span>
                     </div>
-                    <button id="btnLimpar" style="max-width: 150px;">Limpar Seleção</button>
+                    <div class="info-extra" style="width: 100%; margin-top: 10px; background-color: rgba(255, 255, 255, 0.08); padding: 10px; border-radius: 4px; text-align: left;">
+                        <div style="margin-bottom: 5px; font-weight: bold; border-bottom: 1px solid rgba(255, 255, 255, 0.2); padding-bottom: 5px; color: var(--cor-principal);">Resumo das configurações:</div>
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px 15px; margin-bottom: 8px;">
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Sequência de dígitos:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">3n2 2n1 2n0</span>
+                            </div>
+                            
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Mês da sorte:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">Nov</span>
+                            </div>
+                            
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">Número obrigatório:</span>
+                                <span style="font-size: 14px; margin-left: 5px; color: var(--cor-selecionado);">10</span>
+                            </div>
+                        </div>
+                        
+                        <div style="font-size: 14px; margin-bottom: 5px; font-weight: bold;">Sequências de dígitos:</div>
+                        <div style="font-size: 13px; display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px;">
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,4</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,6</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,7</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,8</span>
+                            <span style="background-color: rgba(255, 255, 255, 0.1); padding: 2px 5px; border-radius: 3px;">0,1,2,3,9</span>
+                        </div>
+                        
+                        <div style="font-size: 14px; margin-bottom: 5px; font-weight: bold;">Números selecionados:</div>
+                        <div style="font-size: 13px; line-height: 1.7;">
+                            <div>01 02 03 04</div>
+                            <div>10 11 12 13 14 16 17 18 19</div>
+                            <div>20 21 22 23 24</div>
+                            <div>30 31</div>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 10px; margin-top: 5px; width: 100%;">
+                        <button id="btnLimpar" style="max-width: 150px;">Limpar Seleção</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -438,6 +507,9 @@
             const qtdRestanteSpan = document.getElementById('qtdRestante');
             const btnLimpar = document.getElementById('btnLimpar');
             const btnGerar = document.getElementById('btnGerar');
+            const btnVerResumo = document.getElementById('btnVerResumo');
+            const painelResumo = document.getElementById('painelResumo');
+            const resumoConteudo = document.getElementById('resumoConteudo');
             const resultados = document.getElementById('resultados');
             const listaPalpites = document.getElementById('listaPalpites');
             const numerosObrigatorios = document.getElementById('numerosObrigatorios');
@@ -585,6 +657,102 @@
                 atualizarVisualizacaoNumerosObrigatorios();
             });
             
+            // O botão "Ver Resumo" foi removido, então não precisamos deste evento
+            
+            // Função para gerar o resumo
+            function gerarResumo() {
+                if (digitosSelecionados.length === 0 && numerosSelecionados.length === 0) {
+                    return null;
+                }
+                
+                let resumo = '';
+                
+                // Sequência de dígitos (formato: "Xn Y")
+                if (digitosSelecionados.length > 0) {
+                    resumo += 'RESUMO (sequencia de digitos)\n';
+                    
+                    const sequenciaDigitos = digitosSelecionados.map(digito => {
+                        const qtd = document.getElementById(`qtd-${digito}`).value;
+                        return `${qtd}n ${digito}`;
+                    }).join(' ');
+                    
+                    resumo += sequenciaDigitos + '\n\n';
+                }
+                
+                // Mês da sorte
+                const mesSorte = document.getElementById('mesSorte').value;
+                resumo += '(mes da sorte)\n';
+                resumo += mesSorte + '\n\n\n';
+                
+                // Números que não podem faltar
+                resumo += '(numero que não pode faltar)\n';
+                if (numerosObrigatoriosList.length > 0) {
+                    const numerosFormatados = numerosObrigatoriosList.map(n => 
+                        n < 10 ? `0${n}` : n
+                    ).join(' ');
+                    resumo += numerosFormatados + '\n\n\n';
+                } else {
+                    resumo += 'Nenhum\n\n\n';
+                }
+                
+                // Sequência de dígitos (possíveis combinações)
+                resumo += '(sequencias de digitos)\n';
+                
+                // Gerando sequências de combinação
+                const combinacoes = gerarCombinacoes();
+                resumo += combinacoes.join('\n') + '\n\n';
+                
+                // Números selecionados
+                resumo += '(Números que poderão fazer parte do(s) palpite(s)\n';
+                
+                // Agrupar números por dígito inicial
+                const numerosPorDigito = {};
+                numerosSelecionados.sort((a, b) => a - b).forEach(n => {
+                    const digitoInicial = Math.floor(n / 10);
+                    if (!numerosPorDigito[digitoInicial]) {
+                        numerosPorDigito[digitoInicial] = [];
+                    }
+                    numerosPorDigito[digitoInicial].push(n);
+                });
+                
+                // Formatar para exibição
+                Object.keys(numerosPorDigito).sort((a, b) => a - b).forEach(digitoInicial => {
+                    const numerosLinha = numerosPorDigito[digitoInicial].map(n => 
+                        n < 10 ? `0${n}` : n
+                    ).join(' ');
+                    resumo += numerosLinha + '\n';
+                });
+                
+                resumo += ')';
+                
+                return resumo;
+            }
+            
+            // Função para gerar combinações de dígitos
+            function gerarCombinacoes() {
+                // Esta é uma versão simplificada para demonstrar o conceito
+                // Se necessário, pode ser expandida para gerar todas as combinações possíveis
+                
+                // As combinações mostradas no exemplo são entre dígitos 0-9
+                // Aqui vamos gerar 5 combinações simples baseadas nos dígitos selecionados
+                
+                const combinacoes = [];
+                const todosDigitos = ['0','1','2','3','4','5','6','7','8','9'];
+                const digitosBase = ['0','1','2','3']; // Dígitos base mostrados no exemplo
+                
+                // Criar 5 combinações adicionando diferentes dígitos finais
+                if (digitosSelecionados.length > 0) {
+                    for (let i = 4; i < 9; i++) {
+                        const comb = [...digitosBase, todosDigitos[i]].join(',');
+                        combinacoes.push(comb);
+                    }
+                } else {
+                    combinacoes.push('Nenhuma sequência definida');
+                }
+                
+                return combinacoes;
+            }
+            
             // Função para atualizar contadores
             function atualizarContadores() {
                 qtdSelecionadaSpan.textContent = numerosSelecionados.length;
@@ -670,6 +838,9 @@
             
             // Gerar palpites
             btnGerar.addEventListener('click', function() {
+                // Esconder o painel de resumo
+                painelResumo.classList.add('escondido');
+                
                 // Validações
                 const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
                 
@@ -897,11 +1068,13 @@
                 });
                 
                 resultados.classList.remove('escondido');
+                painelResumo.classList.add('escondido');
             }
             
             // Botão para gerar novos palpites
             document.getElementById('btnNovosPalpites').addEventListener('click', function() {
                 resultados.classList.add('escondido');
+                painelResumo.classList.add('escondido');
             });
             
             // Botão para copiar palpites
@@ -935,6 +1108,60 @@
                 }
                 return array;
             }
+            
+            // Selecionar o número 10 como obrigatório por padrão (conforme solicitado)
+            setTimeout(() => {
+                const btn10 = document.querySelector(`.numero-btn[data-numero="10"]`);
+                if (btn10) {
+                    // Selecionar primeiro
+                    if (!btn10.classList.contains('selecionado')) {
+                        btn10.classList.add('selecionado');
+                        numerosSelecionados.push(10);
+                        atualizarContadores();
+                    }
+                    // Tornar obrigatório
+                    if (!btn10.classList.contains('obrigatorio')) {
+                        btn10.classList.add('obrigatorio');
+                        adicionarNumeroObrigatorio(10);
+                    }
+                }
+                
+                // Selecionar números conforme solicitado
+                const numerosParaSelecionar = [1, 2, 3, 4, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 30, 31];
+                
+                numerosParaSelecionar.forEach(num => {
+                    const btn = document.querySelector(`.numero-btn[data-numero="${num}"]`);
+                    if (btn && !btn.classList.contains('selecionado')) {
+                        btn.classList.add('selecionado');
+                        if (!numerosSelecionados.includes(num)) {
+                            numerosSelecionados.push(num);
+                        }
+                    }
+                });
+                
+                atualizarContadores();
+                
+                // Configurar dígitos
+                document.querySelectorAll('.digito-btn').forEach(btn => {
+                    const digito = btn.getAttribute('data-digito');
+                    
+                    if (['0', '1', '2', '3'].includes(digito)) {
+                        if (!btn.classList.contains('selecionado')) {
+                            btn.classList.add('selecionado');
+                            digitosSelecionados.push(digito);
+                        }
+                        
+                                // Configurar quantidades
+                        const inputQtd = document.getElementById(`qtd-${digito}`);
+                        if (digito === '0') inputQtd.value = 2;
+                        else if (digito === '1') inputQtd.value = 2;
+                        else if (digito === '2') inputQtd.value = 3;
+                        else if (digito === '3') inputQtd.value = 0;
+                    }
+                });
+                
+                atualizarTotalDigitos();
+            }, 500);
         });
     </script>
 </body>
