@@ -507,9 +507,6 @@
             const qtdRestanteSpan = document.getElementById('qtdRestante');
             const btnLimpar = document.getElementById('btnLimpar');
             const btnGerar = document.getElementById('btnGerar');
-            const btnVerResumo = document.getElementById('btnVerResumo');
-            const painelResumo = document.getElementById('painelResumo');
-            const resumoConteudo = document.getElementById('resumoConteudo');
             const resultados = document.getElementById('resultados');
             const listaPalpites = document.getElementById('listaPalpites');
             const numerosObrigatorios = document.getElementById('numerosObrigatorios');
@@ -656,8 +653,6 @@
                 atualizarTotalDigitos();
                 atualizarVisualizacaoNumerosObrigatorios();
             });
-            
-            // O botão "Ver Resumo" foi removido, então não precisamos deste evento
             
             // Função para gerar o resumo
             function gerarResumo() {
@@ -838,9 +833,6 @@
             
             // Gerar palpites
             btnGerar.addEventListener('click', function() {
-                // Esconder o painel de resumo
-                painelResumo.classList.add('escondido');
-                
                 // Validações
                 const qtdNumeros = parseInt(document.getElementById('qtdNumeros').value);
                 
@@ -1068,27 +1060,26 @@
                 });
                 
                 resultados.classList.remove('escondido');
-                painelResumo.classList.add('escondido');
             }
             
             // Botão para gerar novos palpites
             document.getElementById('btnNovosPalpites').addEventListener('click', function() {
                 resultados.classList.add('escondido');
-                painelResumo.classList.add('escondido');
             });
             
-            // Botão para copiar palpites
+            // Botão para copiar palpites - MODIFICADO PARA O NOVO FORMATO
             document.getElementById('btnCopiar').addEventListener('click', function() {
-                let texto = 'PALPITES GERADOS:\n\n';
+                let texto = '';
                 
-                document.querySelectorAll('.palpite').forEach((div, idx) => {
+                document.querySelectorAll('.palpite').forEach((div) => {
                     const numeros = Array.from(div.querySelectorAll('.palpite-numero'))
                         .map(span => span.textContent)
                         .join(' ');
                     
                     const mes = div.querySelector('.palpite-header span').textContent.replace('Mês: ', '');
                     
-                    texto += `Palpite ${idx + 1}: ${numeros} (Mês: ${mes})\n`;
+                    // Formato: "02 04 10 18 20 22 23 Nov"
+                    texto += `${numeros} ${mes}\n`;
                 });
                 
                 try {
@@ -1151,7 +1142,7 @@
                             digitosSelecionados.push(digito);
                         }
                         
-                                // Configurar quantidades
+                        // Configurar quantidades
                         const inputQtd = document.getElementById(`qtd-${digito}`);
                         if (digito === '0') inputQtd.value = 2;
                         else if (digito === '1') inputQtd.value = 2;
